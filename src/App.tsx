@@ -21,6 +21,7 @@ export default function App() {
 
   function handleDragOver(event){
     const { over } = event;
+    console.log(event)
     setParent(over ? over.id : null);
   }
 }

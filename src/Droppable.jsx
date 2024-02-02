@@ -9,7 +9,7 @@ export function Droppable(props) {
   const style = {
     color: isOver ? 'green' : undefined
   };
-  
+
   
   return (
     <div ref={setNodeRef} className="droppable" style={style}>
