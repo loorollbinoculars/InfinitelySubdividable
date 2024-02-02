@@ -4,12 +4,16 @@ import './index.css'
 import { useEffect, useState } from 'react';
 
 
-export function Subidividable(props){
-    const {attributes, listeners,setNodeRef} = useDraggable({id:props.id})
+export function Subdividable(props){
+    const {isOver, setNodeRef} = useDroppable({id:props.id})
+    const {dims, setDims} = useState({})
+    const {siblings, setSiblings} = useState([])
 
+    useEffect(()=>{
+        isOver
+    },[isOver])
 
-
-    return <div className="subdividable" ref={setNodeRef} {...listeners} {...attributes}><DraggableHandle id={2}></DraggableHandle></div>
+    return <div className="subdividable" ref={setNodeRef}><DraggableHandle id={2}></DraggableHandle></div>
 
 }
 
