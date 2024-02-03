@@ -9,11 +9,13 @@ class PanelNode {
 	id: string;
 	dir: string;
 	children: PanelNode[];
+	parent: string;
 
-	constructor(id: string, dir: string, children: PanelNode[]) {
+	constructor(id: string, dir: string, children: PanelNode[], parent = "") {
 		this.id = id;
 		this.dir = dir;
 		this.children = children;
+		this.parent = parent;
 	}
 }
 
@@ -28,11 +30,8 @@ export default function App() {
 		]),
 	];
 	const [graph, setGraph] = useState(startGraph);
-	let listOfElements = interpretBinaryGraph(graph);
+	const listOfElements = interpretBinaryGraph(graph);
 
-	// useEffect(() => {
-	// 	listOfElements = interpretBinaryGraph(graph);
-	// }, [graph]);
 	function interpretBinaryGraph(localGraph) {
 		/*Graph is a binary tree that can look like:
               o   o
@@ -71,22 +70,18 @@ export default function App() {
 				id={el.id}
 				style={{
 					display: "flex",
-					flexBasis: 50 + "%",
+					flexBasis: 100 + "%",
 					border: "1px red solid",
-					padding: "2px",
-					// backgroundColor:
-					// 	"#" +
-					// 	(((1 << 24) * Math.random()) | 0)
-					// 		.toString(16)
-					// 		.padStart(6, "0"),
 					flexDirection: el.dir,
 				}}
 				onClick={(event) => {
 					event.stopPropagation();
 					console.log(event.target.id);
-					let rect = event.target.getBoundingClientRect();
-					let xProportion = (event.clientX - rect.left) / rect.width;
-					let yProportion = (event.clientY - rect.top) / rect.height;
+					const rect = event.target.getBoundingClientRect();
+					const xProportion =
+						(event.clientX - rect.left) / rect.width;
+					const yProportion =
+						(event.clientY - rect.top) / rect.height;
 					let dir = "row";
 					if (xProportion >= 0.8 || xProportion <= 0.2) {
 						dir = "row";
@@ -122,6 +117,7 @@ export default function App() {
 	) {
 		const computedGraph = graph.map((element: PanelNode) => {
 			if (element.id == id) {
+				newElement.parent = element.parent;
 				element.children.push(newElement);
 				element.dir = newDir;
 			} else {
