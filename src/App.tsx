@@ -20,11 +20,11 @@ class PanelNode {
 export default function App() {
 	const startGraph = [
 		new PanelNode("1", "row", [
-			new PanelNode("2", "column", [
-				new PanelNode("3", "row", [new PanelNode("33", "row", [])]),
-				new PanelNode("4", "row", []),
-			]),
-			new PanelNode("5", "column", [new PanelNode("6", "row", [])]),
+			// new PanelNode("2", "column", [
+			// 	new PanelNode("3", "row", [new PanelNode("33", "row", [])]),
+			// 	new PanelNode("4", "row", []),
+			// ]),
+			// new PanelNode("5", "column", [new PanelNode("6", "row", [])]),
 		]),
 	];
 	const [graph, setGraph] = useState(startGraph);
@@ -72,25 +72,38 @@ export default function App() {
 				style={{
 					display: "flex",
 					flexBasis: 50 + "%",
-					backgroundColor:
-						"#" +
-						(((1 << 24) * Math.random()) | 0)
-							.toString(16)
-							.padStart(6, "0"),
+					border: "1px red solid",
+					padding: "2px",
+					// backgroundColor:
+					// 	"#" +
+					// 	(((1 << 24) * Math.random()) | 0)
+					// 		.toString(16)
+					// 		.padStart(6, "0"),
 					flexDirection: el.dir,
 				}}
 				onClick={(event) => {
 					event.stopPropagation();
-					console.log(el.id);
+					console.log(event.target.id);
+					let rect = event.target.getBoundingClientRect();
+					let xProportion = (event.clientX - rect.left) / rect.width;
+					let yProportion = (event.clientY - rect.top) / rect.height;
+					let dir = "row";
+					if (xProportion >= 0.8 || xProportion <= 0.2) {
+						dir = "row";
+					}
+					if (yProportion >= 0.8 || yProportion <= 0.2) {
+						dir = "column";
+					}
 					setGraph(() =>
 						addChildToGraph(
 							graph,
 							el.id,
 							new PanelNode(
 								el.id + String(Math.random() * 100),
-								"row",
+								dir,
 								[]
-							)
+							),
+							dir
 						)
 					);
 				}}
@@ -104,16 +117,19 @@ export default function App() {
 	function addChildToGraph(
 		graph: PanelNode[],
 		id: string,
-		newElement: PanelNode
+		newElement: PanelNode,
+		newDir: string
 	) {
 		const computedGraph = graph.map((element: PanelNode) => {
 			if (element.id == id) {
 				element.children.push(newElement);
+				element.dir = newDir;
 			} else {
 				element.children = addChildToGraph(
 					element.children,
 					id,
-					newElement
+					newElement,
+					newDir
 				);
 			}
 			return element;
