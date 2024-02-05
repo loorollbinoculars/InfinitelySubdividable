@@ -76,13 +76,12 @@ button:focus-visible {
 	display: flex;
 	height: 500px;
 	width: 1000px;
-	padding: 50px;
 	position: relative;
 	align-self: center;
 	background-color: #505050;
 	align-items: stretch;
 	justify-items: stretch;
-	justify-content: center;
+	justify-content: start;
 	/* place-items:stretch; */
 }
 

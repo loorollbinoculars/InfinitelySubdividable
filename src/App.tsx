@@ -140,7 +140,7 @@ export default function App() {
 	}
 
 	return (
-		<div className="holder" style={{ resize: "both", overflow: "hidden" }}>
+		<div className="holder">
 			{/* {listOfElements} */}
 			<DiegoResizable />
 		</div>
@@ -150,32 +150,34 @@ export default function App() {
 function DiegoResizable(props) {
 	const [dragging, setDragging] = useState(false);
 	const [handleBeingDragged, setHandleBeingDragged] = useState(null);
-	const [dims, setDims] = useState([null, null]);
-
+	const [dim, setDim] = useState(80);
 	function clickOnHandle(event, handletype) {
 		setDragging(true);
 		setHandleBeingDragged(handletype);
 	}
+
 	const emptyImg = new Image();
 	return (
 		<div
 			className="testResizable"
 			style={{
-				width: dims[0] == null ? "100%" : dims[0],
-				height: dims[1] == null ? "100%" : dims[1],
+				flexBasis: dim + "%",
 			}}
 		>
 			<div
 				className="rightHandle"
-				onMouseDown={(e) => {
+				onPointerDown={(e) => {
 					clickOnHandle(e, "right");
 				}}
-				onDragStart={(e) => {
-					e.dataTransfer.setDragImage(emptyImg, 0, 0);
+				onPointerMove={(event) => {
+					if (dragging) {
+						// console.log(event.clientX + "  " + event.clientY);
+						// console.log(event.target.getBoundingClientRect());
+					}
+					// setDim((previous) => previous - 1);
 				}}
-				onDrag={(e) => {
-					console.log(e);
-				}}
+				onPointerUp={() => setDragging(false)}
+				onDragEnd={() => console.log("ENDED")}
 				draggable={true}
 			></div>
 			<div
