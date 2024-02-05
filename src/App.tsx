@@ -63,52 +63,15 @@ export default function App() {
       ];
     }]
     */
-		const computedReturn = localGraph.map((el: PanelNode) => (
-			<div
-				className="subdividableWrapper"
-				key={el.id}
-				id={el.id}
-				style={{
-					display: "flex",
-					flexBasis: 100 + "%",
-					border: "1px red solid",
-					flexDirection: el.dir,
-					resize: "both",
-					overflow: "auto",
-				}}
-				onClick={(event) => {
-					event.stopPropagation();
-					console.log(event.target.id);
-					const rect = event.target.getBoundingClientRect();
-					const xProportion =
-						(event.clientX - rect.left) / rect.width;
-					const yProportion =
-						(event.clientY - rect.top) / rect.height;
-					let dir = "row";
-					if (xProportion >= 0.8 || xProportion <= 0.2) {
-						dir = "row";
-					}
-					if (yProportion >= 0.8 || yProportion <= 0.2) {
-						dir = "column";
-					}
-					setGraph(() =>
-						addChildToGraph(
-							graph,
-							el.id,
-							new PanelNode(
-								el.id + String(Math.random() * 100),
-								dir,
-								[]
-							),
-							dir
-						)
-					);
-				}}
-			>
-				{interpretBinaryGraph(el.children)}
-			</div>
-		));
-		return computedReturn;
+	return localGraph.map((el: PanelNode) => {
+			if(el.children.length==0){
+        console.log("Found no children on node")
+        console.log(el)
+        return <ChildPanel key={Math.random()*10} parent={el}> graph={graph} setGraph={setGraph} addChildToGraph={addChildToGraph}</ChildPanel>
+    }else{
+				return <ParentPanel key={Math.random()*10}>{interpretBinaryGraph(el.children)}</ParentPanel>
+          
+  }})
 	}
 
 	function addChildToGraph(
@@ -135,16 +98,18 @@ export default function App() {
 		return computedGraph;
 	}
 
-	function getBorders(graph: PanelNode[], elementId: string, side: string) {
-		return null;
-	}
-
 	return (
-		<div className="holder">
-			{/* {listOfElements} */}
-			<DiegoResizable />
-		</div>
+		<Holder key={1}>
+			{...listOfElements}
+      {console.log(listOfElements)}
+      <textarea>{listOfElements}</textarea>
+			{/* <DiegoResizable /> */}
+		</Holder>
 	);
+}
+
+function Holder(props){
+  return <div className="holder"></div>
 }
 
 function DiegoResizable(props) {
@@ -240,4 +205,51 @@ function interpretGraph(graph, c) {
 			</div>
 		);
 	}
+}
+
+function ParentPanel(props){
+  return <div key={Math.random()*10} className="ParentPanel"></div>
+}
+
+function ChildPanel(props){
+  return <div
+    className="subdividableWrapper"
+    key={props.parent.id + Math.random()*10}
+    id={props.parent.id}
+    style={{
+      display: "flex",
+      flexBasis: 100 + "%",
+      border: "1px red solid",
+      flexDirection: props.parent.dir
+    }}
+    // onClick={(event) => {
+    //   event.stopPropagation();
+    //   // console.log(event.target.id);
+    //   const rect = event.target.getBoundingClientRect();
+    //   const xProportion =
+    //     (event.clientX - rect.left) / rect.width;
+    //   const yProportion =
+    //     (event.clientY - rect.top) / rect.height;
+    //   let dir = "row";
+    //   if (xProportion >= 0.8 || xProportion <= 0.2) {
+    //     dir = "row";
+    //   }
+    //   if (yProportion >= 0.8 || yProportion <= 0.2) {
+    //     dir = "column";
+    //   }
+    //   props.setGraph(() =>
+    //     props.addChildToGraph(
+    //       props.graph,
+    //       props.parent.id,
+    //       new PanelNode(
+    //         props.parent.id + String(Math.random() * 100),
+    //         dir,
+    //         []
+    //       ),
+    //       dir
+    //     )
+    //   );
+    // }}
+    >
+  </div>
 }

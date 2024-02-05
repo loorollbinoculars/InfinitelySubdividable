@@ -204,3 +204,9 @@ button:focus-visible {
 	background-color: aqua;
 	opacity: 0.5;
 }
+
+
+.ParentPanel{
+	display:flex;
+	border: 1px black solid;
+}
