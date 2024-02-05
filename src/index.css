@@ -159,61 +159,16 @@ button:focus-visible {
 
 .subdividableWrapper {
 	display: flex;
-	background-color: green;
+	background: radial-gradient(red, black);
 }
 
-.testResizable {
-	width: 100%;
-	height: 100%;
-	position: relative;
-	background-color: #646cff;
-}
-
-.rightHandle {
-	position: absolute;
-	width: 10px;
-	height: 99%;
-	right: -5px;
-	background-color: aqua;
-	opacity: 0.5;
-}
-
-.topHandle {
-	position: absolute;
-	width: 100%;
-	height: 10px;
-	top: -5px;
-	background-color: aqua;
-	opacity: 0.5;
-}
-
-.bottomHandle {
-	position: absolute;
-	width: 100%;
-	height: 10px;
-	bottom: -5px;
-	background-color: aqua;
-	opacity: 0.5;
-}
-
-.leftHandle {
-	position: absolute;
-	width: 10px;
-	height: 99%;
-	left: -5px;
-	background-color: aqua;
-	opacity: 0.5;
-}
-
-
-.ParentPanel{
-	display:flex;
-	flex-grow:1;
-	flex-basis:100%;
-	border: 1px blue solid;
+.ParentPanel {
+	display: flex;
+	flex-grow: 1;
+	flex-basis: 100%;
 	background-color: navy;
 }
 
-.ChildPanel{
-	flex-grow:1;
+.ChildPanel {
+	flex-grow: 1;
 }
