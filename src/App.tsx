@@ -31,7 +31,7 @@ export default function App() {
 	];
 	const [graph, setGraph] = useState(startGraph);
 	const listOfElements = interpretBinaryGraph(graph);
-
+	console.log(typeof(listOfElements))
 	function interpretBinaryGraph(localGraph) {
 		/*Graph is a binary tree that can look like:
               o   o
@@ -63,34 +63,37 @@ export default function App() {
       ];
     }]
     */
-	return localGraph.map((el: PanelNode) => {
-			if(el.children.length==0){
-        console.log("Found no children on node")
-        console.log(el)
-        return <ChildPanel key={Math.random()*10} parent={el}> graph={graph} setGraph={setGraph} addChildToGraph={addChildToGraph}</ChildPanel>
-    }else{
-				return <ParentPanel key={Math.random()*10}>{interpretBinaryGraph(el.children)}</ParentPanel>
-          
-  }})
+	return localGraph.map((el) => {
+			if(el.children.length===0){
+				return (<ChildPanel key={Math.random()*10} parent={el} id={el.id} graph={graph} setGraph={setGraph} addChildToGraph={addChildToGraph}></ChildPanel>)
+			}else{
+			return (<ParentPanel key={Math.random()*100} id={el.id} dir={el.dir}>
+				{interpretBinaryGraph(el.children)}
+				</ParentPanel>)
+				
+		}})
 	}
 
 	function addChildToGraph(
 		graph: PanelNode[],
 		id: string,
 		newElement: PanelNode,
-		newDir: string
+		newDir: string,
+		previousElement={}
 	) {
+		console.log(previousElement)
 		const computedGraph = graph.map((element: PanelNode) => {
 			if (element.id == id) {
-				newElement.parent = element.parent;
-				element.children.push(newElement);
-				element.dir = newDir;
+				previousElement.children.push(new PanelNode("Constructed", element.dir, [element, newElement]))
+				const idx = previousElement.children.indexOf(element)
+				previousElement.children.splice(idx, idx+1)
 			} else {
 				element.children = addChildToGraph(
 					element.children,
 					id,
 					newElement,
-					newDir
+					newDir,
+					element
 				);
 			}
 			return element;
@@ -99,17 +102,13 @@ export default function App() {
 	}
 
 	return (
-		<Holder key={1}>
-			{...listOfElements}
-      {console.log(listOfElements)}
-      <textarea>{listOfElements}</textarea>
-			{/* <DiegoResizable /> */}
+		<Holder key={1}>{listOfElements}
 		</Holder>
 	);
 }
 
 function Holder(props){
-  return <div className="holder"></div>
+  return <div className="holder">{props.children}</div>
 }
 
 function DiegoResizable(props) {
@@ -208,48 +207,46 @@ function interpretGraph(graph, c) {
 }
 
 function ParentPanel(props){
-  return <div key={Math.random()*10} className="ParentPanel"></div>
+  return <div className="ParentPanel" id = {props.id} style={{flexDirection: props.dir}}>{props.children}</div>
 }
 
 function ChildPanel(props){
   return <div
     className="subdividableWrapper"
-    key={props.parent.id + Math.random()*10}
-    id={props.parent.id}
+	id={props.id}
     style={{
       display: "flex",
       flexBasis: 100 + "%",
-      border: "1px red solid",
-      flexDirection: props.parent.dir
+      border: "1px red solid"
     }}
-    // onClick={(event) => {
-    //   event.stopPropagation();
-    //   // console.log(event.target.id);
-    //   const rect = event.target.getBoundingClientRect();
-    //   const xProportion =
-    //     (event.clientX - rect.left) / rect.width;
-    //   const yProportion =
-    //     (event.clientY - rect.top) / rect.height;
-    //   let dir = "row";
-    //   if (xProportion >= 0.8 || xProportion <= 0.2) {
-    //     dir = "row";
-    //   }
-    //   if (yProportion >= 0.8 || yProportion <= 0.2) {
-    //     dir = "column";
-    //   }
-    //   props.setGraph(() =>
-    //     props.addChildToGraph(
-    //       props.graph,
-    //       props.parent.id,
-    //       new PanelNode(
-    //         props.parent.id + String(Math.random() * 100),
-    //         dir,
-    //         []
-    //       ),
-    //       dir
-    //     )
-    //   );
-    // }}
-    >
+    onClick={(event) => {
+      event.stopPropagation();
+      // console.log(event.target.id);
+      const rect = event.target.getBoundingClientRect();
+      const xProportion =
+        (event.clientX - rect.left) / rect.width;
+      const yProportion =
+        (event.clientY - rect.top) / rect.height;
+      let dir = "row";
+      if (xProportion >= 0.8 || xProportion <= 0.2) {
+        dir = "row";
+      }
+      if (yProportion >= 0.8 || yProportion <= 0.2) {
+        dir = "column";
+      }
+      props.setGraph(() =>
+        props.addChildToGraph(
+          props.graph,
+          props.parent.id,
+          new PanelNode(
+            props.parent.id + String(Math.random() * 100),
+            dir,
+            []
+          ),
+          dir
+        )
+      );
+    }}
+    >{props.children ? props.children : null}
   </div>
 }

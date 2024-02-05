@@ -208,5 +208,12 @@ button:focus-visible {
 
 .ParentPanel{
 	display:flex;
-	border: 1px black solid;
+	flex-grow:1;
+	flex-basis:100%;
+	border: 1px blue solid;
+	background-color: navy;
+}
+
+.ChildPanel{
+	flex-grow:1;
 }
