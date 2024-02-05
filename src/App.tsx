@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { DndContext } from "@dnd-kit/core";
 import { Subdividable } from "./Subdividable";
 import { Resizable } from "./Resizable";
@@ -138,17 +138,26 @@ function ParentPanel(props) {
 }
 
 function ChildPanel(props) {
+	const [basis, setBasis] = useState(100);
+	const [screenXOriginal, setScreenXOriginal] = useState(0);
+	const [screenYOriginal, setScreenYOriginal] = useState(0);
+	const [dragging, setDragging] = useState(false);
 	return (
 		<div
 			className="subdividableWrapper"
 			id={props.id}
 			style={{
 				display: "flex",
-				flexBasis: 100 + "%",
+				flexBasis: basis + "%",
 				border: "1px red solid",
+				alignItems: "center",
+				justifyContent: "center",
 			}}
-			onClick={(event) => {
+			onPointerDown={(event) => {
 				event.stopPropagation();
+				setScreenXOriginal(event.screenX);
+				setScreenYOriginal(event.screenY);
+				setDragging(() => true);
 				const rect = event.target.getBoundingClientRect();
 				const xProportion = (event.clientX - rect.left) / rect.width;
 				const yProportion = (event.clientY - rect.top) / rect.height;
@@ -174,8 +183,16 @@ function ChildPanel(props) {
 					)
 				);
 			}}
+			onPointerMove={(event) => {
+				if (dragging) {
+					setBasis((previous) => previous - 1);
+				}
+			}}
+			// onMouseLeave={(event) => {
+			// 	setDragging(false);
+			// }}
 		>
-			{props.children ? props.children : null}
+			{props.children}
 		</div>
 	);
 }
