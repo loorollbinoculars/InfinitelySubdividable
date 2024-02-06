@@ -159,7 +159,7 @@ button:focus-visible {
 
 .subdividableWrapper {
 	display: flex;
-	background: radial-gradient(red, black);
+	/* background: radial-gradient(red, black); */
 }
 
 .ParentPanel {
