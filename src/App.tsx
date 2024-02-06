@@ -131,6 +131,12 @@ function ParentPanel(props) {
 			className="ParentPanel"
 			id={props.id}
 			style={{ flexDirection: props.dir }}
+			onPointerDown={(event)=>{
+				event.stopPropagation();
+				const rect = event.target.getBoundingClientRect();
+				const xProportion = (event.clientX - rect.left) / rect.width;
+				console.log(props.children)
+			}}
 		>
 			{props.children}
 		</div>
@@ -154,7 +160,6 @@ function ChildPanel(props) {
 				justifyContent: "center",
 			}}
 			onPointerDown={(event) => {
-				event.stopPropagation();
 				setScreenXOriginal(event.screenX);
 				setScreenYOriginal(event.screenY);
 				setDragging(() => true);
