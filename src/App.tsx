@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import React from 'react'
 import { v4 as uuidv4 } from "uuid";
 
 class PanelNode {
@@ -20,13 +21,17 @@ export default function App() {
     new PanelNode("1", "row", [
       new PanelNode(uuidv4(), "column", [
         new PanelNode("3", "row", [new PanelNode("33", "row", [])]),
-        new PanelNode("4", "row", []),
+        new PanelNode("4", "row", [
+          new PanelNode(uuidv4(), "column", []), 
+          new PanelNode(uuidv4(), "column", [])]),
       ]),
-      new PanelNode("5", "column", [new PanelNode("6", "row", [])]),
+      new PanelNode("5", "row", [new PanelNode("6", "row", [])]),
     ]),
   ];
   const [graph, setGraph] = useState(startGraph);
   const listOfElements = interpretBinaryGraph(graph);
+
+
   function interpretBinaryGraph(localGraph) {
     /*Graph is a binary tree that can look like:
               o   o
@@ -122,19 +127,66 @@ function Holder(props) {
 
 function ParentPanel(props) {
   const [dragging, setDragging] = useState(false);
+  const [widths, setWidths] = useState(Array(props.children.length).fill(1/props.children.length))
+  const [landingPoint, setLandingPoint] = useState(0)
+  const [takingfOffPoint, setTakingOffPoint] = useState(0)
+  const [targetedIndex, setTargetedIndex] = useState(0)
+  const selfRef = useRef()
+
+  useEffect(()=>{console.log("re-rendering")},[widths])
+  const handlePointerMove = (event) => {
+    if(props.children.length<=1){
+      return null
+    }
+    if(!dragging){
+      return null
+    }
+    const rect = selfRef.current.getBoundingClientRect();
+    const proportion = props.dir=="row" ? (event.clientX - rect.left) / rect.width : (event.clientY - rect.top) / rect.height 
+    const spacedWidths = [...widths, 0]
+    spacedWidths.reduce((accumulator, currentValue, currentIndex, widths)=>{
+      const diff = Math.abs(accumulator - proportion)
+      if(diff<=0.15){
+        //Set new widths
+        if(currentIndex==1){
+          // If grabbed edge is internal, index will be 1:
+          
+    event.stopPropagation();
+          setWidths(
+            [proportion, 1-proportion]
+          )
+        }
+        // If grabbed edge is external, index will be 0 or 2:
+        
+      }else{
+          if(currentIndex>=widths.length){
+              return null
+          } }
+          return accumulator + currentValue
+     
+  }, 0)
+  }
+
+  const handlePointerDown = ()=>{
+    setDragging(true)
+  }
+  const handlePointerUp = ()=>{
+    setDragging(false)
+  }
+  
   return (
     <div
       className="ParentPanel"
+      ref={selfRef}
       id={props.id}
-      style={{ flexDirection: props.dir }}
-      onPointerDown={(event) => {
-        event.stopPropagation();
-        const rect = event.target.getBoundingClientRect();
-        const xProportion = (event.clientX - rect.left) / rect.width;
-        console.log(props.children);
-      }}
+      style={{ flexDirection: props.dir, flexGrow: props.width }}
+      onPointerUp={handlePointerUp}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onMouseLeave={handlePointerUp}
     >
-      {props.children}
+      {props.children.map((element, index)=>{
+        return React.cloneElement(element, {width:widths[index]})})}
     </div>
   );
 }
@@ -144,21 +196,22 @@ function ChildPanel(props) {
   const [screenXOriginal, setScreenXOriginal] = useState(0);
   const [screenYOriginal, setScreenYOriginal] = useState(0);
   const [dragging, setDragging] = useState(false);
+  
+
+  
   return (
     <div
       className="subdividableWrapper"
       id={props.id}
       style={{
         display: "flex",
-        flexBasis: basis + "%",
+        flexGrow: props.width,
         border: "1px red solid",
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: props.color,
       }}
       onPointerDown={(event) => {
-        setScreenXOriginal(event.screenX);
-        setScreenYOriginal(event.screenY);
         setDragging(() => true);
         const rect = event.target.getBoundingClientRect();
         const xProportion = (event.clientX - rect.left) / rect.width;
@@ -170,19 +223,14 @@ function ChildPanel(props) {
         if (yProportion >= 0.8 || yProportion <= 0.2) {
           dir = "column";
         }
-        props.setGraph((previous) =>
-          props.addChildToGraph(
-            props.graph,
-            props.parent.id,
-            new PanelNode(uuidv4(), dir, []),
-            dir
-          )
-        );
-      }}
-      onPointerMove={(event) => {
-        if (dragging) {
-          setBasis((previous) => previous - 1);
-        }
+        // props.setGraph((previous) =>
+        //   props.addChildToGraph(
+        //     props.graph,
+        //     props.parent.id,
+        //     new PanelNode(uuidv4(), dir, []),
+        //     dir
+        //   )
+        // );
       }}
       // onMouseLeave={(event) => {
       // 	setDragging(false);
