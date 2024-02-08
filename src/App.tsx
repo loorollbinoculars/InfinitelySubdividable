@@ -128,9 +128,6 @@ function Holder(props) {
 function ParentPanel(props) {
   const [dragging, setDragging] = useState(false);
   const [widths, setWidths] = useState(Array(props.children.length).fill(1/props.children.length))
-  const [landingPoint, setLandingPoint] = useState(0)
-  const [takingfOffPoint, setTakingOffPoint] = useState(0)
-  const [targetedIndex, setTargetedIndex] = useState(0)
   const selfRef = useRef()
 
   useEffect(()=>{console.log("re-rendering")},[widths])
@@ -192,13 +189,7 @@ function ParentPanel(props) {
 }
 
 function ChildPanel(props) {
-  const [basis, setBasis] = useState(100);
-  const [screenXOriginal, setScreenXOriginal] = useState(0);
-  const [screenYOriginal, setScreenYOriginal] = useState(0);
-  const [dragging, setDragging] = useState(false);
-  
-
-  
+   
   return (
     <div
       className="subdividableWrapper"
@@ -212,7 +203,6 @@ function ChildPanel(props) {
         backgroundColor: props.color,
       }}
       onPointerDown={(event) => {
-        setDragging(() => true);
         const rect = event.target.getBoundingClientRect();
         const xProportion = (event.clientX - rect.left) / rect.width;
         const yProportion = (event.clientY - rect.top) / rect.height;
@@ -232,9 +222,6 @@ function ChildPanel(props) {
         //   )
         // );
       }}
-      // onMouseLeave={(event) => {
-      // 	setDragging(false);
-      // }}
     >
       {props.children}
     </div>
