@@ -189,10 +189,11 @@ function ParentPanel(props) {
 }
 
 function ChildPanel(props) {
-   
+   const selfRef = useRef()
   return (
     <div
       className="subdividableWrapper"
+      ref={selfRef}
       id={props.id}
       style={{
         display: "flex",
