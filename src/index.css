@@ -30,7 +30,7 @@ body {
 	display: flex;
 	place-items: center;
 	background-image: url("/src/assets/pexels-pixabay-36717.jpg");
-	background-size:cover;
+	background-size: cover;
 	height: 100vh;
 	width: 100vw;
 }
@@ -172,7 +172,7 @@ button:focus-visible {
 	display: flex;
 	position: relative;
 	flex-grow: 1;
-	margin:1px;
+	margin: 1px;
 	backdrop-filter: blur(4.7px);
 	padding: 5px;
 	align-items: center;
@@ -188,8 +188,9 @@ button:focus-visible {
 
 .xButton {
 	color: black;
-	background-color: rgb(239, 239, 239);
+	background-color: rgba(239, 239, 239, 0.283);
 	border-radius: 5px;
+	backdrop-filter: blur(5px);
 	text-align: center;
 	vertical-align: middle;
 	font-weight: 800;
@@ -212,4 +213,17 @@ button:focus-visible {
 	-ms-user-select: none;
 	border-radius: 10px;
 	transition: all 3s eas-in-out;
+}
+
+.subdivide {
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	width: 10px;
+	height: 10px;
+	background: linear-gradient(
+		-45deg,
+		rgba(0, 0, 0, 0.525),
+		rgba(128, 128, 128, 0.571)
+	);
 }

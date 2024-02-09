@@ -105,7 +105,14 @@ export default function App() {
 	function splitChildNode(node, newElement, newDir) {
 		return new PanelNode(uuidv4(), newDir, [node, newElement], "");
 	}
-
+	/**
+	 * Method to add a new node to the graph. Splits one child node into a parent node that contains the original child node and a neighbour node.
+	 * @param graph
+	 * @param id
+	 * @param newElement
+	 * @param newDir
+	 * @returns
+	 */
 	function addChildToGraph(
 		graph: PanelNode[],
 		id: string,
@@ -133,6 +140,7 @@ export default function App() {
 			};
 		});
 	}
+
 	return <Holder key={1}>{listOfElements}</Holder>;
 }
 
@@ -147,9 +155,6 @@ function ParentPanel(props) {
 	);
 	const selfRef = useRef();
 
-	useEffect(() => {
-		console.log("re-rendering");
-	}, [widths]);
 	const handlePointerMove = (event) => {
 		if (props.children.length <= 1) {
 			return null;
@@ -214,8 +219,8 @@ function ParentPanel(props) {
 function ChildPanel(props) {
 	const selfRef = useRef();
 	const [image, setImage] = useState("");
+	const [dragging, setDragging] = useState(false);
 	useEffect(() => {
-		console.log(selfRef.current.getBoundingClientRect());
 		setImage(
 			`https://picsum.photos/${Math.round(
 				parseInt(selfRef.current.getBoundingClientRect().width / 1.2)
@@ -244,17 +249,24 @@ function ChildPanel(props) {
 				if (yProportion >= 0.8 || yProportion <= 0.2) {
 					dir = "column";
 				}
-				// props.setGraph((previous) =>
-				//   props.addChildToGraph(
-				//     props.graph,
-				//     props.parent.id,
-				//     new PanelNode(uuidv4(), dir, []),
-				//     dir
-				//   )
-				// );
 			}}
 		>
 			<div className="xButton">X</div>
+			<div
+				className="subdivide"
+				onPointerDown={(event) => {
+					event.stopPropagation();
+					setDragging(true);
+					props.setGraph((previous) =>
+						props.addChildToGraph(
+							props.graph,
+							props.parent.id,
+							new PanelNode(uuidv4(), props.parent.dir, []),
+							props.parent.dir
+						)
+					);
+				}}
+			></div>
 			<img
 				className="image"
 				src={image}
@@ -262,4 +274,5 @@ function ChildPanel(props) {
 			/>
 			{props.children}
 		</div>
-	);}
+	);
+}
