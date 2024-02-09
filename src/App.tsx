@@ -262,5 +262,4 @@ function ChildPanel(props) {
 			/>
 			{props.children}
 		</div>
-	);
-}
+	);}
