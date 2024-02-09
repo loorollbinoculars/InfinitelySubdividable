@@ -29,7 +29,8 @@ body {
 	margin: 0;
 	display: flex;
 	place-items: center;
-	background-color: rgb(119, 119, 119);
+	background-image: url("/src/assets/pexels-pixabay-36717.jpg");
+	background-size:cover;
 	height: 100vh;
 	width: 100vw;
 }
@@ -171,11 +172,11 @@ button:focus-visible {
 	display: flex;
 	position: relative;
 	flex-grow: 1;
-	border: 1px transparent;
+	margin:1px;
+	backdrop-filter: blur(4.7px);
 	padding: 5px;
 	align-items: center;
 	justify-content: center;
-	border: 1px white solid;
 	background: linear-gradient(
 		rgba(182, 182, 182, 0.841),
 		rgba(128, 128, 128, 0)
