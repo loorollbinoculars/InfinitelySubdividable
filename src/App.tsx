@@ -177,7 +177,7 @@ export default function App() {
 	return (
 		<div>
 			<Holder key={1}>{listOfElements}</Holder>
-			<StyledNodesTree graph={graph} key={39} />
+			{/* <StyledNodesTree graph={graph} key={39} /> */}
 		</div>
 	);
 }
@@ -299,7 +299,7 @@ function ChildPanel(props) {
 			id={props.id}
 			style={{
 				flexGrow: props.width,
-				backgroundColor: props.color,
+				// backgroundColor: props.color,
 			}}
 			onPointerMove={(event) => {
 				if (dragging) {
