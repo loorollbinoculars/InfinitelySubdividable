@@ -1,6 +1,6 @@
 # Infinitely dubsividable, resizable panels
 
-A React panel component that is fully user-customisable, and infinitely subdividable. Make a dashboard that perfeclty fits your needs, using intuitive dragging and dropping controls.
+A React panel component that is fully user-customisable, and infinitely subdividable. Make a dashboard that perfectly fits your needs, using intuitive dragging and dropping controls.
 
 Inspired by Blender's [Areas](https://docs.blender.org/manual/en/latest/interface/window_system/areas.html).
 
