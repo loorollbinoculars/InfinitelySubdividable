@@ -190,7 +190,6 @@ function StyledNodesTree(props) {
 				width: "50em",
 				height: "20em",
 				backgroundColor: "white",
-				transform: "rotate(10)",
 			}}
 		>
 			<Tree data={props.graph} orientation={"vertical"} />
@@ -203,6 +202,7 @@ function Holder(props) {
 
 function ParentPanel(props) {
 	const [dragging, setDragging] = useState(false);
+	const [update, setUpdate] = useState(Math.random());
 	const [widths, setWidths] = useState(
 		Array(props.children.length).fill(1 / props.children.length)
 	);
@@ -233,11 +233,13 @@ function ParentPanel(props) {
 						// If grabbed edge is internal, index will be 1:
 						event.stopPropagation();
 						setWidths([proportion, 1 - proportion]);
+						setUpdate(Math.random()); // Force an update via a random number generator...
 					}
 					// If grabbed edge is external, index will be 0 or 2:
 				} else {
 					if (currentIndex >= widths.length) {
 						//Grabbed edge is external, need to check now if this borders other borders...
+						setUpdate(Math.random()); // Force an update via a random number generator...
 						return null;
 					}
 				}
@@ -249,9 +251,11 @@ function ParentPanel(props) {
 
 	const handlePointerDown = () => {
 		setDragging(true);
+		setUpdate(Math.random()); // Force an update via a random number generator...
 	};
 	const handlePointerUp = () => {
 		setDragging(false);
+		setUpdate(Math.random()); // Force an update via a random number generator...
 	};
 
 	return (
@@ -266,7 +270,10 @@ function ParentPanel(props) {
 			onMouseLeave={handlePointerUp}
 		>
 			{props.children.map((element, index) => {
-				return React.cloneElement(element, { width: widths[index] });
+				return React.cloneElement(element, {
+					width: widths[index],
+					update: update,
+				});
 			})}
 		</div>
 	);
@@ -284,7 +291,7 @@ function ChildPanel(props) {
 				selfRef.current.getBoundingClientRect().height / 1.2
 			)}`
 		);
-	}, [props.width]);
+	}, [props.update]);
 	return (
 		<div
 			className="ChildPanel"
@@ -294,17 +301,42 @@ function ChildPanel(props) {
 				flexGrow: props.width,
 				backgroundColor: props.color,
 			}}
-			onPointerDown={(event) => {
-				const rect = event.target.getBoundingClientRect();
-				const xProportion = (event.clientX - rect.left) / rect.width;
-				const yProportion = (event.clientY - rect.top) / rect.height;
-				let dir = "row";
-				if (xProportion >= 0.8 || xProportion <= 0.2) {
-					dir = "row";
+			onPointerMove={(event) => {
+				if (dragging) {
+					event.stopPropagation();
+					const rect = selfRef.current.getBoundingClientRect();
+					const proportionX =
+						(event.clientX - rect.left) / rect.width;
+					const proportionY =
+						(event.clientY - rect.top) / rect.height;
+					console.log("Check");
+					if (proportionX <= 0.7) {
+						props.setGraph(
+							props.addChildToGraph(
+								props.graph,
+								props.parent.id,
+								new PanelNode(uuidv4(), props.parent.dir, []),
+								"row"
+							)
+						);
+					}
+					if (proportionY <= 0.7) {
+						props.setGraph(
+							props.addChildToGraph(
+								props.graph,
+								props.parent.id,
+								new PanelNode(uuidv4(), props.parent.dir, []),
+								"column"
+							)
+						);
+					}
 				}
-				if (yProportion >= 0.8 || yProportion <= 0.2) {
-					dir = "column";
-				}
+			}}
+			onPointerUp={(event) => {
+				setDragging(false);
+			}}
+			onMouseLeave={(event) => {
+				setDragging(false);
 			}}
 		>
 			<div
@@ -320,16 +352,7 @@ function ChildPanel(props) {
 			<div
 				className="subdivide"
 				onPointerDown={(event) => {
-					event.stopPropagation();
 					setDragging(true);
-					props.setGraph((previous) =>
-						props.addChildToGraph(
-							props.graph,
-							props.parent.id,
-							new PanelNode(uuidv4(), props.parent.dir, []),
-							props.parent.dir
-						)
-					);
 				}}
 			></div>
 			<img
