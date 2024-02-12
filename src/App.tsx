@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
+import Tree from "react-d3-tree";
 
 class PanelNode {
 	id: string;
@@ -113,7 +114,14 @@ export default function App() {
 			node.children.forEach((el) => {
 				if (el.id == id) {
 					childIdentified = true;
-					node.children.splice(node.children.indexOf(el), 1);
+
+					switch (node.children.indexOf(el)) {
+						case 1:
+							node = node.children[0];
+							break;
+						case 0:
+							node = node.children[1];
+					}
 				}
 			});
 			if (!childIdentified) {
@@ -166,9 +174,29 @@ export default function App() {
 		});
 	}
 
-	return <Holder key={1}>{listOfElements}</Holder>;
+	return (
+		<div>
+			<Holder key={1}>{listOfElements}</Holder>
+			<StyledNodesTree graph={graph} key={39} />
+		</div>
+	);
 }
 
+function StyledNodesTree(props) {
+	return (
+		<div
+			id="treeWrapper"
+			style={{
+				width: "50em",
+				height: "20em",
+				backgroundColor: "white",
+				transform: "rotate(10)",
+			}}
+		>
+			<Tree data={props.graph} orientation={"vertical"} />
+		</div>
+	);
+}
 function Holder(props) {
 	return <div className="holder">{props.children}</div>;
 }
@@ -198,7 +226,7 @@ function ParentPanel(props) {
 		spacedWidths.reduce(
 			(accumulator, currentValue, currentIndex, widths) => {
 				const diff = Math.abs(accumulator - proportion);
-				if (diff <= 0.15) {
+				if (diff <= 0.05) {
 					// Pointer is close enough to this border.
 					// Set new widths
 					if (currentIndex == 1) {
@@ -264,7 +292,7 @@ function ChildPanel(props) {
 			id={props.id}
 			style={{
 				flexGrow: props.width,
-				// backgroundColor: props.color,
+				backgroundColor: props.color,
 			}}
 			onPointerDown={(event) => {
 				const rect = event.target.getBoundingClientRect();
@@ -307,7 +335,7 @@ function ChildPanel(props) {
 			<img
 				className="image"
 				src={image}
-				style={{ position: "absolute", draggable: false }}
+				style={{ position: "absolute" }}
 			/>
 			{props.children}
 		</div>

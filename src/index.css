@@ -181,7 +181,7 @@ button:focus-visible {
 		rgba(182, 182, 182, 0.841),
 		rgba(128, 128, 128, 0)
 	);
-	border-radius: 10px;
+	border-radius: 10px 10px 10px 10px;
 	/* box-shadow: 5px 5px 5px black; */
 	overflow: hidden;
 }
@@ -212,7 +212,7 @@ button:focus-visible {
 	-webkit-user-select: none;
 	-ms-user-select: none;
 	border-radius: 10px;
-	transition: all 3s eas-in-out;
+	transition: all 3s ease-in-out;
 }
 
 .subdivide {
@@ -226,4 +226,26 @@ button:focus-visible {
 		rgba(0, 0, 0, 0.525),
 		rgba(128, 128, 128, 0.571)
 	);
+	transition: all 0.5s;
+}
+
+.subdivide:hover {
+	transform: scale(5);
+}
+
+.ChildPanel:has(.subdivide:hover) {
+	border-radius: 10px 10px 10px 10px;
+}
+
+.childBubble {
+	width: 10px;
+	height: 10px;
+	background-color: red;
+}
+
+.parentBubble {
+	width: 30px;
+	height: 30px;
+	display: flex;
+	background-color: #535bf2;
 }
