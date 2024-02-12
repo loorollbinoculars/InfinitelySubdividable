@@ -18,6 +18,7 @@ class PanelNode {
 }
 
 export default function App() {
+	const [visible, setVisible] = useState(false);
 	const startGraph = [
 		new PanelNode("1", "row", [
 			new PanelNode(uuidv4(), "column", [
@@ -177,7 +178,13 @@ export default function App() {
 	return (
 		<div>
 			<Holder key={1}>{listOfElements}</Holder>
-			{/* <StyledNodesTree graph={graph} key={39} /> */}
+			<button
+				onClick={() => {
+					setVisible((previous) => !previous);
+				}}
+				style={{ backgroundColor: "rgba(0, 0, 0, 0.283)" }}
+			></button>
+			{visible ? <StyledNodesTree graph={graph} key={39} /> : null}
 		</div>
 	);
 }
@@ -188,7 +195,7 @@ function StyledNodesTree(props) {
 			id="treeWrapper"
 			style={{
 				width: "50em",
-				height: "20em",
+				height: "10em",
 				backgroundColor: "white",
 			}}
 		>
