@@ -90,6 +90,7 @@ export default function App() {
 						graph={graph}
 						setGraph={setGraph}
 						addChildToGraph={addChildToGraph}
+						removeChildFromGraph={removeChildFromGraph}
 						color={stringToColour(el.id)}
 					></ChildPanel>
 				);
@@ -105,6 +106,31 @@ export default function App() {
 	function splitChildNode(node, newElement, newDir) {
 		return new PanelNode(uuidv4(), newDir, [node, newElement], "");
 	}
+
+	function removeChildFromGraph(graph, id) {
+		return graph.map((node) => {
+			let childIdentified = false;
+			node.children.forEach((el) => {
+				if (el.id == id) {
+					childIdentified = true;
+					node.children.splice(node.children.indexOf(el), 1);
+				}
+			});
+			if (!childIdentified) {
+				if (node.children.length === 0) {
+					return node;
+				} else {
+					return {
+						...node,
+						children: removeChildFromGraph(node.children, id),
+					};
+				}
+			} else {
+				return node;
+			}
+		});
+	}
+
 	/**
 	 * Method to add a new node to the graph. Splits one child node into a parent node that contains the original child node and a neighbour node.
 	 * @param graph
@@ -123,7 +149,6 @@ export default function App() {
 			if (node.id === id) {
 				return splitChildNode(node, newElement, newDir);
 			}
-
 			if (node.children.length === 0) {
 				return node;
 			}
@@ -156,38 +181,41 @@ function ParentPanel(props) {
 	const selfRef = useRef();
 
 	const handlePointerMove = (event) => {
-		if (props.children.length <= 1) {
-			return null;
-		}
 		if (!dragging) {
 			return null;
 		}
+		if (props.children.length <= 1) {
+			return null;
+		}
+
 		const rect = selfRef.current.getBoundingClientRect();
 		const proportion =
 			props.dir == "row"
 				? (event.clientX - rect.left) / rect.width
 				: (event.clientY - rect.top) / rect.height;
 		const spacedWidths = [...widths, 0];
+		// Find which border is being grabbed: it can be the left, middle, or right border of a parent div with two children:
 		spacedWidths.reduce(
 			(accumulator, currentValue, currentIndex, widths) => {
 				const diff = Math.abs(accumulator - proportion);
 				if (diff <= 0.15) {
-					//Set new widths
+					// Pointer is close enough to this border.
+					// Set new widths
 					if (currentIndex == 1) {
 						// If grabbed edge is internal, index will be 1:
-
 						event.stopPropagation();
 						setWidths([proportion, 1 - proportion]);
 					}
 					// If grabbed edge is external, index will be 0 or 2:
 				} else {
 					if (currentIndex >= widths.length) {
+						//Grabbed edge is external, need to check now if this borders other borders...
 						return null;
 					}
 				}
 				return accumulator + currentValue;
 			},
-			0
+			0 // Starting value for the reduce method.
 		);
 	};
 
@@ -251,7 +279,16 @@ function ChildPanel(props) {
 				}
 			}}
 		>
-			<div className="xButton">X</div>
+			<div
+				className="xButton"
+				onPointerDown={(event) => {
+					props.setGraph((previous) =>
+						props.removeChildFromGraph(props.graph, props.id)
+					);
+				}}
+			>
+				X
+			</div>
 			<div
 				className="subdivide"
 				onPointerDown={(event) => {
