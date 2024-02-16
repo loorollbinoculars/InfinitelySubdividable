@@ -3,6 +3,9 @@ import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import Tree from "react-d3-tree";
 
+// TODO: Make subdivide handle automatically trigger a resize state - the resulting ParentPanel should be instantiated with a true dragging state and immediately resize its children.
+
+
 class PanelNode {
 	id: string;
 	dir: string;
